@@ -1,0 +1,580 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Typing Speed Test</title>
+    <style>
+        :root {
+            --primary: #4a6bff;
+            --secondary: #ff6b6b;
+            --background: #f8f9fa;
+            --correct: #28a745;
+            --incorrect: #dc3545;
+            --neutral: #6c757d;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: var(--background);
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: var(--primary);
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        input[type="text"] {
+            width: 80%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #3a5be0;
+        }
+        
+        button.secondary {
+            background-color: var(--secondary);
+        }
+        
+        button.secondary:hover {
+            background-color: #e55c5c;
+        }
+        
+        #displayBox {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px auto;
+            width: 85%;
+            min-height: 100px;
+            text-align: left;
+            font-size: 18px;
+            line-height: 1.6;
+            position: relative;
+        }
+        
+        #displayText {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        textarea {
+            width: 85%;
+            height: 120px;
+            margin: 20px auto;
+            font-size: 18px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            resize: none;
+            transition: border 0.3s;
+        }
+        
+        textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .stat-item {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            min-width: 150px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid var(--primary);
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--neutral);
+        }
+        
+        .timer {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 15px 0;
+            color: var(--primary);
+        }
+        
+        .highlight-correct {
+            background-color: rgba(40, 167, 69, 0.2);
+        }
+        
+        .highlight-incorrect {
+            background-color: rgba(220, 53, 69, 0.2);
+            text-decoration: underline wavy var(--incorrect);
+        }
+        
+        .sample-texts {
+            margin-top: 30px;
+            padding: 10px;
+        }
+        
+        .character {
+            position: relative;
+            display: inline;
+        }
+        
+        .character.correct {
+            color: var(--correct);
+        }
+        
+        .character.incorrect {
+            color: var(--incorrect);
+        }
+        
+        .character.current {
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        /* Mode toggle */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            font-size: 24px;
+        }
+        
+        /* Dark mode */
+        body.dark-mode {
+            background-color: #222;
+            color: #f0f0f0;
+        }
+        
+        body.dark-mode .container {
+            background-color: #333;
+        }
+        
+        body.dark-mode #displayBox {
+            background-color: #444;
+        }
+        
+        body.dark-mode input, 
+        body.dark-mode textarea,
+        body.dark-mode .stat-item {
+            background-color: #444;
+            color: #f0f0f0;
+            border-color: #555;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background-color: #ddd;
+            border-radius: 3px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Advanced Typing Speed Test</h1>
+        
+        <div class="theme-toggle" onclick="toggleDarkMode()">🌓</div>
+        
+        <div class="input-group">
+            <input type="text" id="userText" placeholder="Enter your own text to type or use sample texts">
+            <button onclick="setText('custom')">Set Custom Text</button>
+            <div class="sample-texts">
+                <button onclick="setSampleText('easy')">Easy Text</button>
+                <button onclick="setSampleText('medium')">Medium Text</button>
+                <button onclick="setSampleText('hard')">Hard Text</button>
+            </div>
+        </div>
+        
+        <div class="timer" id="timer">00:00</div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        
+        <div id="displayBox">
+            <div id="displayText"></div>
+        </div>
+        
+        <textarea id="typingArea" placeholder="Click 'Start Test' and begin typing..." disabled></textarea>
+        
+        <div>
+            <button id="startButton" onclick="startTest()">Start Test</button>
+            <button id="restartButton" onclick="restartTest()" disabled>Restart</button>
+            <button class="secondary" onclick="resetTest()">Reset</button>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-label">WPM</div>
+                <div class="stat-value" id="wpm">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">CPM</div>
+                <div class="stat-value" id="cpm">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Accuracy</div>
+                <div class="stat-value" id="accuracy">0%</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Errors</div>
+                <div class="stat-value" id="errors">0</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Variables
+        let startTime, endTime, timerInterval, testActive = false;
+        let totalTypedChars = 0, correctTypedChars = 0, errors = 0;
+        let seconds = 0, minutes = 0;
+        let currentPosition = 0;
+        let targetText = "";
+        let lastInputLength = 0;
+        let charStatus = []; // Track status of each character: 0=not typed, 1=correct, 2=incorrect
+        
+        // Sample texts
+        const sampleTexts = {
+            easy: "The quick brown fox jumps over the lazy dog. This sentence contains all the letters in the English alphabet.",
+            medium: "Programming is the process of creating a set of instructions that tell a computer how to perform a task. Programming can be done using many programming languages.",
+            hard: "The intricate network of quantum entanglement poses profound questions about the very fabric of reality, as distant particles instantaneously influence each other's states, seemingly defying classical physics and challenging our perception of causality in the universe."
+        };
+        
+        // Set text based on user input or sample
+        function setText(type) {
+            resetTest();
+            if(type === 'custom') {
+                targetText = document.getElementById("userText").value.trim();
+                if(targetText === "") {
+                    alert("Please enter some text first!");
+                    return;
+                }
+            }
+            
+            // Initialize character status array
+            charStatus = new Array(targetText.length).fill(0);
+            
+            displayText();
+            document.getElementById("startButton").disabled = false;
+        }
+        
+        // Set sample text
+        function setSampleText(difficulty) {
+            document.getElementById("userText").value = sampleTexts[difficulty];
+            setText('custom');
+        }
+        
+        // Format display text with characters
+        function displayText() {
+            const display = document.getElementById("displayText");
+            display.innerHTML = "";
+            
+            for (let i = 0; i < targetText.length; i++) {
+                const charSpan = document.createElement("span");
+                charSpan.textContent = targetText[i];
+                charSpan.className = "character";
+                
+                // Apply correct/incorrect classes based on charStatus
+                if (charStatus[i] === 1) {
+                    charSpan.classList.add("correct");
+                } else if (charStatus[i] === 2) {
+                    charSpan.classList.add("incorrect");
+                }
+                
+                // Add current class to current position
+                if (i === currentPosition) {
+                    charSpan.classList.add("current");
+                }
+                
+                display.appendChild(charSpan);
+            }
+        }
+        
+        // Start the typing test
+        function startTest() {
+            if (targetText === "") {
+                alert("Please set a text first!");
+                return;
+            }
+            
+            testActive = true;
+            currentPosition = 0;
+            totalTypedChars = 0;
+            correctTypedChars = 0;
+            errors = 0;
+            seconds = 0;
+            minutes = 0;
+            lastInputLength = 0;
+            charStatus = new Array(targetText.length).fill(0);
+            
+            // Update display
+            displayText();
+            
+            // Enable typing area and focus it
+            const typingArea = document.getElementById("typingArea");
+            typingArea.value = "";
+            typingArea.disabled = false;
+            typingArea.focus();
+            
+            // Start timer
+            startTime = new Date();
+            timerInterval = setInterval(updateTimer, 1000);
+            
+            // Update button states
+            document.getElementById("startButton").disabled = true;
+            document.getElementById("restartButton").disabled = false;
+            
+            // Add event listener for typing
+            typingArea.addEventListener("input", checkTyping);
+        }
+        
+        // Check typing against target text
+        function checkTyping(e) {
+            if (!testActive) return;
+            
+            const typedText = e.target.value;
+            const currentLength = typedText.length;
+            
+            // Detect if backspace was pressed (current length is less than previous length)
+            if (currentLength < lastInputLength) {
+                // Handle backspace
+                handleBackspace(currentLength);
+            } else if (currentLength > lastInputLength) {
+                // Handle new character
+                const newChar = typedText[currentLength - 1];
+                handleNewCharacter(newChar);
+            }
+            
+            // Update last input length
+            lastInputLength = currentLength;
+            
+            // Update display
+            displayText();
+            
+            // Update progress bar
+            updateProgressBar();
+            
+            // Check if test is completed
+            if (currentPosition >= targetText.length) {
+                endTest();
+            }
+            
+            // Update stats in real-time
+            updateStats();
+        }
+        
+        // Handle backspace
+        function handleBackspace(currentLength) {
+            if (currentPosition > 0) {
+                // Move back one position
+                currentPosition--;
+                
+                // Reset character status at the current position
+                charStatus[currentPosition] = 0;
+                
+                // If it was an error before, decrease error count
+                if (charStatus[currentPosition] === 2) {
+                    errors--;
+                }
+                
+                // Decrease total typed chars
+                totalTypedChars--;
+                
+                // If it was correct before, decrease correct typed chars
+                if (charStatus[currentPosition] === 1) {
+                    correctTypedChars--;
+                }
+            }
+        }
+        
+        // Handle new character
+        function handleNewCharacter(newChar) {
+            if (currentPosition < targetText.length) {
+                totalTypedChars++;
+                
+                // Check if character is correct
+                if (newChar === targetText[currentPosition]) {
+                    charStatus[currentPosition] = 1; // Mark as correct
+                    correctTypedChars++;
+                } else {
+                    charStatus[currentPosition] = 2; // Mark as incorrect
+                    errors++;
+                }
+                
+                // Move to next position
+                currentPosition++;
+            }
+        }
+        
+        // Update timer display
+        function updateTimer() {
+            seconds++;
+            if (seconds === 60) {
+                minutes++;
+                seconds = 0;
+            }
+            
+            // Format time
+            const displayMinutes = minutes < 10 ? "0" + minutes : minutes;
+            const displaySeconds = seconds < 10 ? "0" + seconds : seconds;
+            
+            document.getElementById("timer").textContent = `${displayMinutes}:${displaySeconds}`;
+            
+            // Update stats in real-time
+            updateStats();
+        }
+        
+        // Update progress bar
+        function updateProgressBar() {
+            const progress = (currentPosition / targetText.length) * 100;
+            document.getElementById("progress").style.width = `${progress}%`;
+        }
+        
+        // Update statistics
+        function updateStats() {
+            if (!testActive) return;
+            
+            const elapsedTime = (new Date() - startTime) / 60000; // in minutes
+            
+            // Calculate WPM: (characters typed / 5) / minutes
+            // Using standard 5 characters per word
+            const words = totalTypedChars / 5;
+            const wpm = Math.round(words / (elapsedTime || 1)); // Avoid division by zero
+            
+            // Calculate CPM: characters per minute
+            const cpm = Math.round(totalTypedChars / (elapsedTime || 1));
+            
+            // Calculate accuracy
+            const accuracy = Math.round((correctTypedChars / (totalTypedChars || 1)) * 100);
+            
+            // Update stats display
+            document.getElementById("wpm").textContent = wpm;
+            document.getElementById("cpm").textContent = cpm;
+            document.getElementById("accuracy").textContent = `${accuracy}%`;
+            document.getElementById("errors").textContent = errors;
+        }
+        
+        // End the test
+        function endTest() {
+            testActive = false;
+            clearInterval(timerInterval);
+            endTime = new Date();
+            
+            document.getElementById("typingArea").disabled = true;
+            document.getElementById("typingArea").removeEventListener("input", checkTyping);
+            
+            // Final stats update
+            updateStats();
+        }
+        
+        // Restart the test with the same text
+        function restartTest() {
+            resetTest();
+            startTest();
+        }
+        
+        // Reset the test completely
+        function resetTest() {
+            testActive = false;
+            clearInterval(timerInterval);
+            
+            // Reset display
+            document.getElementById("displayText").innerHTML = "";
+            document.getElementById("timer").textContent = "00:00";
+            document.getElementById("typingArea").value = "";
+            document.getElementById("typingArea").disabled = true;
+            document.getElementById("progress").style.width = "0%";
+            
+            // Reset stats
+            document.getElementById("wpm").textContent = "0";
+            document.getElementById("cpm").textContent = "0";
+            document.getElementById("accuracy").textContent = "0%";
+            document.getElementById("errors").textContent = "0";
+            
+            // Reset buttons
+            document.getElementById("startButton").disabled = false;
+            document.getElementById("restartButton").disabled = true;
+            
+            // Reset variables
+            currentPosition = 0;
+            lastInputLength = 0;
+            seconds = 0;
+            minutes = 0;
+            charStatus = [];
+        }
+        
+        // Toggle dark mode
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+        }
+        
+        // Initialize with some sample text
+        window.onload = function() {
+            document.getElementById("userText").value = sampleTexts.easy;
+            setText('custom');
+        };
+    </script>
+</body>
+</html>
